@@ -1,0 +1,21 @@
+## electronic
+
+esp8266 node mcu
+hilink 5v
+
+ds18b20
+
+
+//https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+
+
+
+
+## dependance
+
+pio lib install "OneWire"
+pio lib install "DallasTemperature"
+
+
+pio device monitor -b 115200
+pio run -t upload  
