@@ -21,7 +21,7 @@ const char *pass = "lejard54";
 #define ONE_WIRE_BUS_5 33 // DS18B20
 #define ONE_WIRE_BUS_6 32 // DS18B20
 
-#define ONE_WIRE_BUS_E 35 // DS18B20
+#define ONE_WIRE_BUS_E 13 // DS18B20
 
 
 const char * host = "maplaine.fr";
