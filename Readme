@@ -19,3 +19,10 @@ pio lib install "DallasTemperature"
 
 pio device monitor -b 115200
 pio run -t upload  
+
+
+
+## prix
+
+200 e
+30 e par an
