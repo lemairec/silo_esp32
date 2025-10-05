@@ -1,4 +1,5 @@
 /.pio/*
 /esp32/.pio/*
+*.DS_Store
 
 
