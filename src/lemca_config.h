@@ -9,6 +9,9 @@ extern "C" {
 
 extern void printConfig();
 
+const char * getWifiPass();
+const char * getWifiSsid();
+
 #ifdef __cplusplus
 }
 #endif

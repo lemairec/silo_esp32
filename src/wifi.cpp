@@ -1,18 +1,14 @@
 #include "wifi.hpp"
 #include "common/util.h"
+#include "lemca_config.h"
 
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
 //const char *ssid = "ferme_lemaire";
 //const char *pass = "lejard02";
-const char *ssid = "Livebox-lemaire";
-const char *pass = "lejard54";
 const char * host = "maplaine.fr";
 const uint16_t port = 443;
-
-String company = "dizy";
-String balise = "test";
 
 const int time_wifi_s = 60;
 class Wifi {
@@ -47,7 +43,7 @@ public :
             m_error_wifi = 0;
             WiFi.disconnect();
             client.setInsecure();
-            WiFi.begin(ssid, pass);
+            WiFi.begin(getWifiSsid(), getWifiPass());
             sprintf(m_debug, "%i - init wifi", i_s);
             lc_DebugPrintBuffer(m_debug);
             return;

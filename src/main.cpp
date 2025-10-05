@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "common/util.h"
 #include "wifi.hpp"
+#include "lemca_config.h"
 #include "gpio.hpp"
 
 TaskHandle_t Task1;
@@ -46,39 +47,8 @@ void loop(void) {
     if(!m_init){
         if(i > 3000){
             printConfig();
-            parserInit();
             m_init = true;
         }
     }
-
-    int i_s2 = i/100;
-    if(i_s2 != m_last_s2){
-        m_last_s2 = i_s2;
-        loopSilo(i);
-    }
-
-    int i_s = i/1000;
-    if(i_s != m_last_s){
-        m_last_s = i_s;
-        nextionUpdateS();
-        //lc_DebugPrint("loop %i\n",m_last_s);
-        if(i_s%10 == 0){
-            //loopWifi();
-        }
-    }
-    
-    while (Serial2.available()){ //Is data coming through the serial from the Nextion?
-        int i = Serial2.read();
-        readNChar(i);
-    }
 }
 
-
-/*SoftwareSerial nextionSerial(D5, D6); // RX, TX
-    Nextion nex(nextionSerial);
-    uint32_t number;
-    nex.sendCommand("get rtc0");
-    nex.receiveNumber(&number));
-    Serial.println(" >> number: " + String(number));
-prints n0.val,2
-prints n0.id,1*/
