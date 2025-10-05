@@ -32,6 +32,8 @@ void setup(){
         0,  /* Priority of the task */
         &Task1,  /* Task handle. */
         0); /* Core where the task should run */
+    
+    lc_DebugPrint("setup end");
 }
 
 int m_last_s2 = 0;
