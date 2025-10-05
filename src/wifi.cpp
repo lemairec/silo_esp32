@@ -14,8 +14,7 @@ const uint16_t port = 443;
 String company = "dizy";
 String balise = "test";
 
-
-
+const int time_wifi_s = 60;
 class Wifi {
 public :
     String m_last_resp;
@@ -65,7 +64,15 @@ public :
         sprintf(m_debug, "%i - ip %d.%d.%d.%d ", i_s, ip[0], ip[1], ip[2], ip[3]);
         lc_DebugPrintBuffer(m_debug);
 
-        
+        if(i_s%time_wifi_s == 10){   
+            
+            sprintf(m_debug, "%i - connecting to server..", i_s);
+            lc_DebugPrintBuffer(m_debug);
+
+
+            
+            m_error_wifi = 0;
+        }
     };
 };
 
