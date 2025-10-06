@@ -1,6 +1,7 @@
 #include "wifi.hpp"
 #include "common/util.h"
 #include "lemca_config.h"
+#include "gpio.hpp"
 
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
@@ -10,7 +11,6 @@
 const char * host = "maplaine.fr";
 const uint16_t port = 443;
 
-const int time_wifi_s = 60;
 class Wifi {
 public :
     String m_last_resp;
@@ -60,13 +60,31 @@ public :
         sprintf(m_debug, "%i - ip %d.%d.%d.%d ", i_s, ip[0], ip[1], ip[2], ip[3]);
         lc_DebugPrintBuffer(m_debug);
 
-        if(i_s%time_wifi_s == 10){   
-            
-            sprintf(m_debug, "%i - connecting to server..", i_s);
+        if(i_s%getWifiS() == 10){  
+            char path[100];
+            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&t1=%.1f", getCompany(), getBalise(), getTemperatureTE() );
+           
+            sprintf(m_debug, "%i - connecting to server.. %s", i_s, path);
             lc_DebugPrintBuffer(m_debug);
 
 
-            
+            if (https.begin(client, host, port, path)) {
+                int httpsCode = https.GET();
+                if (httpsCode > 0) {
+                    if (httpsCode == HTTP_CODE_OK) {
+                        m_last_resp = https.getString();
+                        Serial.println(m_last_resp);
+
+                        
+                    }
+                } else {
+                    m_last_resp = "fail get";
+                    Serial.print("failed to GET");
+                }
+            } else {
+                m_last_resp = "fail server";
+                Serial.print("failed to connect to server");
+            }
             m_error_wifi = 0;
         }
     };

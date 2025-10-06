@@ -32,6 +32,10 @@ const char * getBalise(){
     return balise;
 }
 
+int getWifiS(){
+    return nb_minutes*60;
+}
+
 
 void printConfig(){
     lc_DebugPrint("*** config\n");

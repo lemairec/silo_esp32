@@ -48,6 +48,17 @@ void loop(void) {
         if(i > 3000){
             printConfig();
             m_init = true;
+            readTemperatures();
+        }
+    }
+
+    int i_s = i/1000;
+    if(i_s != m_last_s){
+        m_last_s = i_s;
+        //nextionUpdateS();
+        //lc_DebugPrint("loop %i\n",m_last_s);
+        if(i_s%10 == 0){
+            readTemperatures();
         }
     }
 }
