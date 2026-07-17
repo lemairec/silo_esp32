@@ -2,11 +2,11 @@
 #include "common/util.h"
 
 #define ONE_WIRE_BUS_E 4 // DS18B20
-#define ONE_WIRE_BUS_1 13 // DS18B20
-#define ONE_WIRE_BUS_2 14 // DS18B20
+#define ONE_WIRE_BUS_1 19 // DS18B20
+#define ONE_WIRE_BUS_2 20 // DS18B20
 #define ONE_WIRE_BUS_3 21 // DS18B20
 
-#define ONE_WIRE_BUS_4 47 // DS18B20
+#define ONE_WIRE_BUS_4 14 // DS18B20
 
 #ifdef ONE_WIRE_BUS_E
 OneWire one_wire_E(ONE_WIRE_BUS_E);

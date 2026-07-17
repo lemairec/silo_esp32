@@ -6,8 +6,6 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
-//const char *ssid = "ferme_lemaire";
-//const char *pass = "lejard02";
 const char * host = "maplaine.fr";
 const uint16_t port = 443;
 
@@ -62,10 +60,11 @@ public :
 
         if(i_s%getWifiS() == 10){  
             char path[100];
-            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&t1=%.1f", getCompany(), getBalise(), getTemperatureTE() );
+            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&te=%.1f&t1=%.1f&t2=%.1f&t3=%.1f", getCompany(), getBalise(), getTemperatureTE(), getTemperatureT1(), getTemperatureT2(), getTemperatureT3() );
            
-            sprintf(m_debug, "%i - connecting to server.. %s", i_s, path);
             lc_DebugPrintBuffer(m_debug);
+            lc_DebugPrintBuffer(path);
+
 
 
             if (https.begin(client, host, port, path)) {
