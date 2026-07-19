@@ -18,6 +18,7 @@ public :
     HTTPClient https;
 
     int m_error_wifi = 300;
+    bool m_was_send = false;
     
     const char * wl_status_to_string(wl_status_t status) {
         switch (status) {
@@ -55,10 +56,10 @@ public :
             return;
         }
         IPAddress ip = WiFi.localIP();
-        sprintf(m_debug, "%i - ip %d.%d.%d.%d ", i_s, ip[0], ip[1], ip[2], ip[3]);
+        sprintf(m_debug, "%i %i - ip %d.%d.%d.%d ", i_s, getWifiS(), ip[0], ip[1], ip[2], ip[3]);
         lc_DebugPrintBuffer(m_debug);
 
-        if(i_s%getWifiS() == 10){  
+        if(i_s%getWifiS() == 0 || !m_was_send){
             char path[100];
             sprintf(path, "/silo/api_sonde?company=%s&balise=%s&te=%.1f&t1=%.1f&t2=%.1f&t3=%.1f", getCompany(), getBalise(), getTemperatureTE(), getTemperatureT1(), getTemperatureT2(), getTemperatureT3() );
            
@@ -72,17 +73,21 @@ public :
                 if (httpsCode > 0) {
                     if (httpsCode == HTTP_CODE_OK) {
                         m_last_resp = https.getString();
+                        Serial.println(" => ");
                         Serial.println(m_last_resp);
-
-                        
+                        m_was_send = true;
                     }
                 } else {
                     m_last_resp = "fail get";
-                    Serial.print("failed to GET");
+                    Serial.println(" => ");
+                    Serial.print("failed to GET ");
+                    Serial.print(httpsCode);
+                    Serial.println("");
                 }
             } else {
                 m_last_resp = "fail server";
-                Serial.print("failed to connect to server");
+                Serial.println(" => ");
+                Serial.print("failed to connect to server\n");
             }
             m_error_wifi = 0;
         }
