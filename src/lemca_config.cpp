@@ -10,14 +10,22 @@
 const char * version = "26.07.01";
 
 const char *company = "dizy";
-const char *balise = "batiment";
-int nb_minutes = 1;
+const char *balise = "autre";
+int nb_minutes = 5;
+
+
 
 //const char *ssid = "Livebox-lemaire";
 //const char *pass = "lejard54";
 //const char *ssid = "ferme_lemaire";
 const char *ssid = "ferme_lemaire2";
 const char *pass = "lejard02";
+
+/*const char *company = "Paste";
+const char *balise = "stomo";
+int nb_minutes = 5;
+const char *ssid = "silo_paste";
+const char *pass = "Paste2026!";*/
 
 
 const char * getWifiPass(){
