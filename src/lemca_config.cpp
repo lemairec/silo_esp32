@@ -10,15 +10,15 @@
 const char * version = "26.07.01";
 
 const char *company = "dizy";
-const char *balise = "autre";
-int nb_minutes = 5;
+const char *balise = "divers";
+int nb_minutes = 1;
 
 
 
 //const char *ssid = "Livebox-lemaire";
 //const char *pass = "lejard54";
-//const char *ssid = "ferme_lemaire";
-const char *ssid = "ferme_lemaire2";
+
+const char *ssid = "ferme_lemaire";
 const char *pass = "lejard02";
 
 /*const char *company = "Paste";
