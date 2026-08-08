@@ -3,6 +3,7 @@
 #include "wifi.hpp"
 #include "lemca_config.h"
 #include "gpio.hpp"
+#include "led.hpp"
 
 TaskHandle_t Task1;
 
@@ -24,6 +25,7 @@ void setup(){
     Serial.println("setup_silo");
     Serial.println("setup_silo end");
     setupGpio();
+    initLed();
 
     xTaskCreatePinnedToCore(
         taskLoop, /* Function to implement the task */
@@ -35,31 +37,42 @@ void setup(){
         0); /* Core where the task should run */
     
     lc_DebugPrint("setup end");
+
+    
 }
 
 int m_last_s2 = 0;
 int m_last_s = 0;
+int m_last_100ms = 0;
 bool m_init = false;
 
 void loop(void) {
 
     int i = millis();
     if(!m_init){
-        if(i > 3000){
+        if(i > 5000){
             printConfig();
             m_init = true;
             readTemperatures();
         }
+        return;
     }
+
 
     int i_s = i/1000;
     if(i_s != m_last_s){
         m_last_s = i_s;
         //nextionUpdateS();
-        //lc_DebugPrint("loop %i\n",m_last_s);
+        lc_DebugPrint("loop %i\n",m_last_s);
         if(i_s%10 == 0){
             readTemperatures();
         }
+    }
+
+    int i_s2 = i/100;
+    if(i_s != m_last_100ms){
+        m_last_100ms = i_s2;
+        loopLed100ms(i);
     }
 }
 
