@@ -6,7 +6,10 @@
 
 void initLed();
 
-void ledSetError(int i);
+void setLedStateWaiting();
+void setLedStateOk();
+void setLedStateError(int error);
+void setLedStateWarning(int error);
 
 void loopLed100ms(int millis);
 

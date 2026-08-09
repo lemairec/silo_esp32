@@ -47,32 +47,34 @@ int m_last_100ms = 0;
 bool m_init = false;
 
 void loop(void) {
-
     int i = millis();
+
+    int i_s2 = i/100;
+    if(i_s2 != m_last_100ms){
+        m_last_100ms = i_s2;
+        loopLed100ms(i);
+    }
+
     if(!m_init){
         if(i > 5000){
             printConfig();
             m_init = true;
             readTemperatures();
+            setLedStateWaiting();
         }
         return;
     }
-
-
+    
     int i_s = i/1000;
     if(i_s != m_last_s){
         m_last_s = i_s;
         //nextionUpdateS();
-        lc_DebugPrint("loop %i\n",m_last_s);
+        //lc_DebugPrint("loop %i\n",m_last_s);
         if(i_s%10 == 0){
             readTemperatures();
         }
     }
 
-    int i_s2 = i/100;
-    if(i_s != m_last_100ms){
-        m_last_100ms = i_s2;
-        loopLed100ms(i);
-    }
+    
 }
 

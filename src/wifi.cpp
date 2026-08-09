@@ -2,12 +2,19 @@
 #include "common/util.h"
 #include "lemca_config.h"
 #include "gpio.hpp"
+#include "led.hpp"
 
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
 const char * host = "maplaine.fr";
 const uint16_t port = 443;
+
+enum WifiStatus {
+    WIFI_INIT = 0,
+    WIFI_WARNING = 1,
+    WIFI_ERROR = 2
+};
 
 class Wifi {
 public :
@@ -19,7 +26,7 @@ public :
 
     int m_error_wifi = 300;
     bool m_was_send = false;
-    
+
     const char * wl_status_to_string(wl_status_t status) {
         switch (status) {
             case WL_NO_SHIELD: return "WL_NO_SHIELD";
@@ -32,6 +39,18 @@ public :
             case WL_DISCONNECTED: return "WL_DISCONNECTED";
         }
         return "WL_ERROR";
+    }
+
+    void setErrorWifi(int error){
+        setLedStateError(error);
+    }
+
+    void setWarningWifi(int error){
+        setLedStateWarning(error);
+    }
+
+    void setOkWifi(){
+        setLedStateOk();
     }
 
     void loopWifi2(int i_s){
@@ -50,6 +69,7 @@ public :
 
         wl_status_t status = WiFi.status();
         if(status != WL_CONNECTED){
+            setErrorWifi(1);
             sprintf(m_debug, "%i - error %i %s", i_s, m_error_wifi, wl_status_to_string(status));
             lc_DebugPrintBuffer(m_debug);
             m_error_wifi++;
@@ -70,26 +90,33 @@ public :
 
             if (https.begin(client, host, port, path)) {
                 int httpsCode = https.GET();
-                if (httpsCode > 0) {
-                    if (httpsCode == HTTP_CODE_OK) {
-                        m_last_resp = https.getString();
-                        Serial.println(" => ");
-                        Serial.println(m_last_resp);
-                        m_was_send = true;
-                    }
+                if (httpsCode > 0 && httpsCode == HTTP_CODE_OK) {
+                    m_last_resp = https.getString();
+                    Serial.println(" => ");
+                    Serial.println(m_last_resp);
+                    m_was_send = true;
+
+                    setOkWifi();
+                    m_error_wifi = 0;
                 } else {
                     m_last_resp = "fail get";
                     Serial.println(" => ");
                     Serial.print("failed to GET ");
                     Serial.print(httpsCode);
                     Serial.println("");
+
+                    setWarningWifi(1);
+                    m_error_wifi++;
                 }
             } else {
                 m_last_resp = "fail server";
                 Serial.println(" => ");
                 Serial.print("failed to connect to server\n");
+                
+                setWarningWifi(2);
+                m_error_wifi++;
             }
-            m_error_wifi = 0;
+            
         }
     };
 };
