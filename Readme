@@ -24,5 +24,11 @@ pio run -t upload
 
 ## prix
 
-200 e
+300 e + 30e sonde
 30 e par an
+
+
+-30 à -67 dBm	Bon à excellent
+-70 à -80 dBm	Faible mais généralement utilisable
+-80 à -90 dBm	Très faible, connexions instables
+< -90 dBm	Quasi inutilisable
