@@ -96,6 +96,7 @@ public :
                     Serial.println(m_last_resp);
                     m_was_send = true;
 
+                    sprintf(m_debug, "%i %i - get OK %i", i_s, getWifiS(), httpsCode);
                     setOkWifi();
                     m_error_wifi = 0;
                 } else {
@@ -105,6 +106,7 @@ public :
                     Serial.print(httpsCode);
                     Serial.println("");
 
+                    sprintf(m_debug, "%i %i - get Fail %i", i_s, getWifiS(), httpsCode);
                     setWarningWifi(1);
                     m_error_wifi++;
                 }
@@ -113,6 +115,7 @@ public :
                 Serial.println(" => ");
                 Serial.print("failed to connect to server\n");
                 
+                sprintf(m_debug, "%i %i - fail_server", i_s, getWifiS());
                 setWarningWifi(2);
                 m_error_wifi++;
             }
