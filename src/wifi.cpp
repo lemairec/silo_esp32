@@ -32,7 +32,7 @@ void logScanRssi(const char * ssid) {
     bool found = false;
     for (int i = 0; i < n; i++) {
         int db = WiFi.RSSI(i);
-        sprintf(buf, "scan - rssi %s : %d dBm => %i", WiFi.SSID(i), db, getScoreWifiDb(db));
+        sprintf(buf, "scan - rssi %s : %d dBm => %i", WiFi.SSID(i).c_str(), db, getScoreWifiDb(db));
         lc_DebugPrintBuffer(buf);
         if (WiFi.SSID(i) == ssid) {
             found = true;
