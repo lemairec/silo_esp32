@@ -16,6 +16,33 @@ enum WifiStatus {
     WIFI_ERROR = 2
 };
 
+void logScanRssi(const char * ssid) {
+    int n = WiFi.scanNetworks();
+    char buf[100];
+    bool found = false;
+    for (int i = 0; i < n; i++) {
+        if (WiFi.SSID(i) == ssid) {
+            sprintf(buf, "scan - rssi %s : %d dBm", ssid, WiFi.RSSI(i));
+            lc_DebugPrintBuffer(buf);
+            found = true;
+        }
+    }
+    if (!found) {
+        sprintf(buf, "scan - ssid %s not found (%d networks seen)", ssid, n);
+        lc_DebugPrintBuffer(buf);
+    }
+    WiFi.scanDelete();
+}
+
+void onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
+    if (event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED) {
+        char buf[100];
+        uint8_t reason = info.wifi_sta_disconnected.reason;
+        sprintf(buf, "wifi disconnect reason %u %s", reason, WiFi.disconnectReasonName((wifi_err_reason_t)reason));
+        lc_DebugPrintBuffer(buf);
+    }
+}
+
 class Wifi {
 public :
     String m_last_resp;
@@ -26,6 +53,7 @@ public :
 
     int m_error_wifi = 300;
     bool m_was_send = false;
+    bool m_event_registered = false;
 
     const char * wl_status_to_string(wl_status_t status) {
         switch (status) {
@@ -59,7 +87,12 @@ public :
         }
         if(m_error_wifi > 30){
             m_error_wifi = 0;
+            if(!m_event_registered){
+                m_event_registered = true;
+                WiFi.onEvent(onWifiEvent);
+            }
             WiFi.disconnect();
+            logScanRssi(getWifiSsid());
             client.setInsecure();
             WiFi.begin(getWifiSsid(), getWifiPass());
             sprintf(m_debug, "%i - init wifi", i_s);
@@ -76,12 +109,21 @@ public :
             return;
         }
         IPAddress ip = WiFi.localIP();
-        sprintf(m_debug, "%i %i - ip %d.%d.%d.%d ", i_s, getWifiS(), ip[0], ip[1], ip[2], ip[3]);
+        int db = WiFi.RSSI();
+        int db_qual = 0;
+        if(db < -67){
+            db_qual = 3;
+        } else if(db < -80){
+            db_qual = 2;
+        } else if(db < -90){
+            db_qual = 1;
+        }
+        sprintf(m_debug, "%i %i - ip %d.%d.%d.%d rssi %d dBm", i_s, getWifiS(), ip[0], ip[1], ip[2], ip[3], db);
         lc_DebugPrintBuffer(m_debug);
 
         if(i_s%getWifiS() == 0 || !m_was_send){
             char path[200];
-            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&v=%s&te=%.1f&t1=%.1f&t2=%.1f&t3=%.1f&t4=%.1f&t5=%.1f&t6=%.1f&t7=%.1f&t8=%.1f&t9=%.1f", getCompany(), getBalise(), getVersion(), getTemperatureTE(), getTemperatureT1(), getTemperatureT2(), getTemperatureT3(), getTemperatureT4(), getTemperatureT5(), getTemperatureT6(), getTemperatureT7(), getTemperatureT8(), getTemperatureT9() );
+            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&v=%s&wifi=%d&te=%.1f&t1=%.1f&t2=%.1f&t3=%.1f&t4=%.1f&t5=%.1f&t6=%.1f&t7=%.1f&t8=%.1f&t9=%.1f", getCompany(), getBalise(), getVersion(), db_qual, getTemperatureTE(), getTemperatureT1(), getTemperatureT2(), getTemperatureT3(), getTemperatureT4(), getTemperatureT5(), getTemperatureT6(), getTemperatureT7(), getTemperatureT8(), getTemperatureT9() );
            
             lc_DebugPrintBuffer(m_debug);
             lc_DebugPrintBuffer(path);
