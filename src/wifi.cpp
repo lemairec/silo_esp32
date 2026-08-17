@@ -10,6 +10,16 @@
 const char * host = "maplaine.fr";
 const uint16_t port = 443;
 
+int getScoreWifiDb(int db){
+    if (db <= -100) {
+        return 0;
+    } else if (db >= -50) {
+        return 10;
+    } else {
+        return (db + 100) / 5;
+    }
+}
+
 enum WifiStatus {
     WIFI_INIT = 0,
     WIFI_WARNING = 1,
@@ -21,9 +31,10 @@ void logScanRssi(const char * ssid) {
     char buf[100];
     bool found = false;
     for (int i = 0; i < n; i++) {
+        int db = WiFi.RSSI(i);
+        sprintf(buf, "scan - rssi %s : %d dBm => %i", WiFi.SSID(i), db, getScoreWifiDb(db));
+        lc_DebugPrintBuffer(buf);
         if (WiFi.SSID(i) == ssid) {
-            sprintf(buf, "scan - rssi %s : %d dBm", ssid, WiFi.RSSI(i));
-            lc_DebugPrintBuffer(buf);
             found = true;
         }
     }
@@ -110,15 +121,8 @@ public :
         }
         IPAddress ip = WiFi.localIP();
         int db = WiFi.RSSI();
-        int db_qual = 0;
-        if(db < -67){
-            db_qual = 3;
-        } else if(db < -80){
-            db_qual = 2;
-        } else if(db < -90){
-            db_qual = 1;
-        }
-        sprintf(m_debug, "%i %i - ip %d.%d.%d.%d rssi %d dBm", i_s, getWifiS(), ip[0], ip[1], ip[2], ip[3], db);
+        int db_qual = getScoreWifiDb(db);
+        sprintf(m_debug, "%i %i - ip %d.%d.%d.%d rssi %d dBm => %i", i_s, getWifiS(), ip[0], ip[1], ip[2], ip[3], db, db_qual);
         lc_DebugPrintBuffer(m_debug);
 
         if(i_s%getWifiS() == 0 || !m_was_send){
