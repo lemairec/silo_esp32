@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 
-const char * version = "26_07_03";
+const char * version = "26_07_04";
 
 const char *company = "dizy";
 const char *balise = "divers";
