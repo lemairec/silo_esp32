@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 
-const char * version = "26.07.02";
+const char * version = "26_07_03";
 
 const char *company = "dizy";
 const char *balise = "divers";
@@ -42,6 +42,10 @@ const char * getCompany(){
 
 const char * getBalise(){
     return balise;
+}
+
+const char * getVersion(){
+    return version;
 }
 
 int getWifiS(){

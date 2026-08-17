@@ -13,7 +13,10 @@ const char * getWifiPass();
 const char * getWifiSsid();
 const char * getCompany();
 const char * getBalise();
+const char * getVersion();
+
 int getWifiS();
+
 
 #ifdef __cplusplus
 }
