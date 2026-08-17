@@ -6,6 +6,7 @@
 
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
+#include <cstring>
 
 const char * host = "maplaine.fr";
 const uint16_t port = 443;
@@ -26,23 +27,40 @@ enum WifiStatus {
     WIFI_ERROR = 2
 };
 
-void logScanRssi(const char * ssid) {
+// Scans for `ssid` and picks the AP with the strongest RSSI when several
+// access points share the same SSID, so we can pin the connection to it
+// instead of letting the radio pick (and roam away from) an arbitrary one.
+bool logScanRssi(const char * ssid, uint8_t * out_bssid, int32_t * out_channel) {
     int n = WiFi.scanNetworks();
     char buf[100];
     bool found = false;
+    int best_rssi = -1000;
+    int best_index = -1;
     for (int i = 0; i < n; i++) {
         int db = WiFi.RSSI(i);
         sprintf(buf, "scan - rssi %s : %d dBm => %i", WiFi.SSID(i).c_str(), db, getScoreWifiDb(db));
         lc_DebugPrintBuffer(buf);
         if (WiFi.SSID(i) == ssid) {
             found = true;
+            if (db > best_rssi) {
+                best_rssi = db;
+                best_index = i;
+            }
         }
     }
     if (!found) {
         sprintf(buf, "scan - ssid %s not found (%d networks seen)", ssid, n);
         lc_DebugPrintBuffer(buf);
+    } else if (best_index >= 0) {
+        uint8_t * bssid = WiFi.BSSID(best_index);
+        memcpy(out_bssid, bssid, 6);
+        *out_channel = WiFi.channel(best_index);
+        sprintf(buf, "scan - best AP for %s : %02X:%02X:%02X:%02X:%02X:%02X ch%d %d dBm",
+                ssid, bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5], (int)*out_channel, best_rssi);
+        lc_DebugPrintBuffer(buf);
     }
     WiFi.scanDelete();
+    return found && best_index >= 0;
 }
 
 void onWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -63,8 +81,20 @@ public :
     HTTPClient https;
 
     int m_error_wifi = 300;
+    int m_reconnect_attempts = 0;
     bool m_was_send = false;
     bool m_event_registered = false;
+    uint8_t m_best_bssid[6] = {0};
+    int32_t m_best_channel = 0;
+
+    // Exponential backoff on reconnect attempts (30, 60, 120, ... capped),
+    // so a dead link doesn't retry association at a fixed, wasteful rate.
+    int getReconnectThreshold() {
+        const int base = 30;
+        const int max_threshold = 480;
+        int threshold = base << min(m_reconnect_attempts, 4);
+        return min(threshold, max_threshold);
+    }
 
     const char * wl_status_to_string(wl_status_t status) {
         switch (status) {
@@ -96,17 +126,24 @@ public :
         if(i_s < 5){
             return;
         }
-        if(m_error_wifi > 30){
+        if(m_error_wifi > getReconnectThreshold()){
             m_error_wifi = 0;
+            m_reconnect_attempts++;
             if(!m_event_registered){
                 m_event_registered = true;
                 WiFi.onEvent(onWifiEvent);
             }
             WiFi.disconnect();
-            logScanRssi(getWifiSsid());
+            WiFi.setSleep(false);
+            WiFi.setTxPower(WIFI_POWER_19_5dBm);
+            bool has_best_ap = logScanRssi(getWifiSsid(), m_best_bssid, &m_best_channel);
             client.setInsecure();
-            WiFi.begin(getWifiSsid(), getWifiPass());
-            sprintf(m_debug, "%i - init wifi", i_s);
+            if(has_best_ap){
+                WiFi.begin(getWifiSsid(), getWifiPass(), m_best_channel, m_best_bssid);
+            } else {
+                WiFi.begin(getWifiSsid(), getWifiPass());
+            }
+            sprintf(m_debug, "%i - init wifi (attempt %i, next retry after %i)", i_s, m_reconnect_attempts, getReconnectThreshold());
             lc_DebugPrintBuffer(m_debug);
             return;
         }
@@ -119,6 +156,7 @@ public :
             m_error_wifi++;
             return;
         }
+        m_reconnect_attempts = 0;
         IPAddress ip = WiFi.localIP();
         int db = WiFi.RSSI();
         int db_qual = getScoreWifiDb(db);
