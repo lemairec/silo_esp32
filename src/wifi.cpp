@@ -165,7 +165,7 @@ public :
 
         if(i_s%getWifiS() == 0 || !m_was_send){
             char path[200];
-            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&v=%s&wifi=%d&te=%.1f&t1=%.1f&t2=%.1f&t3=%.1f&t4=%.1f&t5=%.1f&t6=%.1f&t7=%.1f&t8=%.1f&t9=%.1f", getCompany(), getBalise(), getVersion(), db_qual, getTemperatureTE(), getTemperatureT1(), getTemperatureT2(), getTemperatureT3(), getTemperatureT4(), getTemperatureT5(), getTemperatureT6(), getTemperatureT7(), getTemperatureT8(), getTemperatureT9() );
+            sprintf(path, "/silo/api_sonde?company=%s&balise=%s&v=%s&wifi=%d&te=%.1f&t1=%.1f&t2=%.1f&t3=%.1f&t4=%.1f&t5=%.1f&t6=%.1f&t7=%.1f&t8=%.1f&t9=%.1f&t10=%.1f&t11=%.1f&t12=%.1f", getCompany(), getBalise(), getVersion(), db_qual, getTemperatureTE(), getTemperatureT1(), getTemperatureT2(), getTemperatureT3(), getTemperatureT4(), getTemperatureT5(), getTemperatureT6(), getTemperatureT7(), getTemperatureT8(), getTemperatureT9(), getTemperatureT10(), getTemperatureT11(), getTemperatureT12() );
            
             lc_DebugPrintBuffer(m_debug);
             lc_DebugPrintBuffer(path);

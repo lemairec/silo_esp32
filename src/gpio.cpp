@@ -5,14 +5,17 @@
 #define ONE_WIRE_BUS_1 19 // DS18B20
 #define ONE_WIRE_BUS_2 20 // DS18B20
 #define ONE_WIRE_BUS_3 21 // DS18B20
+#define ONE_WIRE_BUS_4 14 // DS18B20
 
-#define ONE_WIRE_BUS_4 11 // DS18B20
-#define ONE_WIRE_BUS_5 10 // DS18B20
-#define ONE_WIRE_BUS_6 9 // DS18B20
+#define ONE_WIRE_BUS_5 13 // DS18B20
+#define ONE_WIRE_BUS_6 12 // DS18B20
+#define ONE_WIRE_BUS_7 11 // DS18B20
+#define ONE_WIRE_BUS_8 10 // DS18B20
 
-#define ONE_WIRE_BUS_7 15 // DS18B20
-#define ONE_WIRE_BUS_8 7 // DS18B20
-#define ONE_WIRE_BUS_9 6 // DS18B20
+#define ONE_WIRE_BUS_9 9 // DS18B20
+#define ONE_WIRE_BUS_10 18 // DS18B20
+#define ONE_WIRE_BUS_11 17 // DS18B20
+#define ONE_WIRE_BUS_12 16 // DS18B20
 
 /*#define ONE_WIRE_BUS_4 14 // DS18B20
 #define ONE_WIRE_BUS_5 13 // DS18B20
@@ -78,6 +81,22 @@ OneWire one_wire_9(ONE_WIRE_BUS_9);
 DallasTemperature DS18B20_9(&one_wire_9);
 #endif
 
+#ifdef ONE_WIRE_BUS_10
+OneWire one_wire_10(ONE_WIRE_BUS_10);
+DallasTemperature DS18B20_10(&one_wire_10);
+#endif
+
+#ifdef ONE_WIRE_BUS_11
+OneWire one_wire_11(ONE_WIRE_BUS_11);
+DallasTemperature DS18B20_11(&one_wire_11);
+#endif
+
+#ifdef ONE_WIRE_BUS_12
+OneWire one_wire_12(ONE_WIRE_BUS_12);
+DallasTemperature DS18B20_12(&one_wire_12);
+#endif
+
+
 
 
 double m_tempE = 0;
@@ -90,6 +109,9 @@ double m_temp6 = 0;
 double m_temp7 = 0;
 double m_temp8 = 0;
 double m_temp9 = 0;
+double m_temp10 = 0;
+double m_temp11 = 0;
+double m_temp12 = 0;
 
 void setupGpio(){
     DS18B20_E.begin();
@@ -102,6 +124,9 @@ void setupGpio(){
     DS18B20_7.begin();
     DS18B20_8.begin();
     DS18B20_9.begin();
+    DS18B20_10.begin();
+    DS18B20_11.begin();
+    DS18B20_12.begin();
 
     DS18B20_E.setWaitForConversion(false);
     DS18B20_1.setWaitForConversion(false);
@@ -113,6 +138,9 @@ void setupGpio(){
     DS18B20_7.setWaitForConversion(false);
     DS18B20_8.setWaitForConversion(false);
     DS18B20_9.setWaitForConversion(false);
+    DS18B20_10.setWaitForConversion(false);
+    DS18B20_11.setWaitForConversion(false);
+    DS18B20_12.setWaitForConversion(false);
 }
 
 double getTemperatureT1(){
@@ -146,6 +174,15 @@ double getTemperatureT8(){
 double getTemperatureT9(){
     return m_temp9;
 }
+double getTemperatureT10(){
+    return m_temp10;
+}
+double getTemperatureT11(){
+    return m_temp11;
+}
+double getTemperatureT12(){
+    return m_temp12;
+}
 
 double getTemperatureTE(){
     return m_tempE;
@@ -173,6 +210,15 @@ void readTemperatures(){
     m_temp8 = DS18B20_8.getTempCByIndex(0);
     DS18B20_9.requestTemperatures();
     m_temp9 = DS18B20_9.getTempCByIndex(0);
-    lc_DebugPrint("te %.1f, t1 %.1f, t2 %.1f, t3 %.1f, t4 %.1f, t5 %.1f, t6 %.1f, t7 %.1f, t8 %.1f, t9 %.1f\n",m_tempE, m_temp1, m_temp2, m_temp3, m_temp4, m_temp5, m_temp6, m_temp7, m_temp8, m_temp9);
+    DS18B20_10.requestTemperatures();
+    m_temp10 = DS18B20_10.getTempCByIndex(0);
+    DS18B20_11.requestTemperatures();
+    m_temp11 = DS18B20_11.getTempCByIndex(0);
+    DS18B20_12.requestTemperatures();
+    m_temp12 = DS18B20_12.getTempCByIndex(0);
+    lc_DebugPrint("te %.1f\n", m_tempE);
+    lc_DebugPrint("t1 %.1f, t2 %.1f, t3 %.1f, t4 %.1f\n", m_temp1, m_temp2, m_temp3, m_temp4);
+    lc_DebugPrint("t5 %.1f, t6 %.1f, t7 %.1f, t8 %.1f\n", m_temp5, m_temp6, m_temp7, m_temp8);
+    lc_DebugPrint("t9 %.1f, t10 %.1f, t11 %.1f, t12 %.1f\n", m_temp9, m_temp10, m_temp11, m_temp12);
     
 }

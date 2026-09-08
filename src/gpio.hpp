@@ -14,6 +14,9 @@ double getTemperatureT6();
 double getTemperatureT7();
 double getTemperatureT8();
 double getTemperatureT9();
+double getTemperatureT10();
+double getTemperatureT11();
+double getTemperatureT12();
 
 double getTemperatureTE();
 
