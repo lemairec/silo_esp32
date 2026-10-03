@@ -21,11 +21,10 @@ int nb_minutes = 1;
 const char *ssid = "ferme_lemaire";
 const char *pass = "lejard02";
 
-/*const char *company = "Paste";
-const char *balise = "stomo";
-int nb_minutes = 5;
-const char *ssid = "silo_paste";
-const char *pass = "Paste2026!";*/
+//const char *company = "Paste";
+//const char *balise = "hangar_1";
+//const char *ssid = "silo_paste";
+//const char *pass = "Paste2026!";
 
 
 const char * getWifiPass(){
